@@ -37,7 +37,7 @@ export default function Home() {
           </div>
           <div style={{ display:"flex",alignItems:"center",gap:20 }}>
             <button onClick={() => setDark(!dark)} style={{ width:36,height:36,borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,cursor:"pointer",fontSize:16 }}>{dark ? "☀️" : "🌙"}</button>
-            <button style={{ padding:"10px 24px",borderRadius:10,background:C.primary,color:"#1A1A1A",border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>Começar grátis</button>
+            <a href="/signup" style={{ padding:"10px 24px",borderRadius:10,background:C.primary,color:"#1A1A1A",border:"none",fontSize:14,fontWeight:700,cursor:"pointer",textDecoration:"none" }}>Começar grátis</a>
           </div>
         </div>
       </nav>
@@ -57,7 +57,7 @@ export default function Home() {
               Prestadores verificados. Pagamento protegido por escrow. Contratos digitais, vistorias e DIMOB automática para imobiliárias.
             </p>
             <div style={{ display:"flex",flexWrap:"wrap",gap:14 }}>
-              <button style={{ padding:"16px 32px",borderRadius:12,background:C.primary,color:"#1A1A1A",border:"none",fontSize:16,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 24px rgba(242,183,5,0.35)" }}>Criar conta grátis</button>
+              <a href="/signup" style={{ padding:"16px 32px",borderRadius:12,background:C.primary,color:"#1A1A1A",border:"none",fontSize:16,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 24px rgba(242,183,5,0.35)",textDecoration:"none",display:"inline-block" }}>Criar conta grátis</a>
               <button style={{ padding:"16px 32px",borderRadius:12,background:"rgba(255,255,255,0.08)",color:"#fff",border:"1.5px solid rgba(255,255,255,0.2)",fontSize:16,fontWeight:700,cursor:"pointer" }}>Ver como funciona</button>
             </div>
             <div style={{ display:"flex",gap:36,marginTop:40 }}>
@@ -204,7 +204,7 @@ export default function Home() {
                     <span style={{ color:C.primary }}>✓</span>{f}
                   </div>
                 ))}
-                <button style={{ width:"100%",padding:"14px 0",borderRadius:10,background:p.outline?"transparent":C.primary,color:p.outline?C.text:"#1A1A1A",border:p.outline?`2px solid ${C.border}`:"none",fontSize:14,fontWeight:700,cursor:"pointer",marginTop:20 }}>{p.cta}</button>
+                <button style={{ width:"100%",padding:"14px 0",borderRadius:10,background:p.outline?"transparent":C.primary,color:p.outline?C.text:"#1A1A1A",border:p.outline?`2px solid ${C.border}`:"none",fontSize:14,fontWeight:700,cursor:"pointer",marginTop:20 ,textDecoration:"none",display:"block",textAlign:"center"}} href="/signup">{p.cta}</a>
               </div>
             ))}
           </div>
@@ -218,7 +218,7 @@ export default function Home() {
           <h2 style={{ fontSize:36,fontWeight:800,color:"#fff",margin:"0 0 16px" }}>Pronto para <span style={{ color:C.primary }}>começar</span>?</h2>
           <p style={{ fontSize:17,color:"rgba(255,255,255,0.6)",lineHeight:1.7,marginBottom:32 }}>Cadastre-se gratuitamente. Encontre profissionais, gerencie imóveis, receba pagamentos.</p>
           <div style={{ display:"flex",justifyContent:"center",gap:14,flexWrap:"wrap" }}>
-            <button style={{ padding:"16px 36px",borderRadius:12,background:C.primary,color:"#1A1A1A",border:"none",fontSize:16,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 24px rgba(242,183,5,0.35)" }}>Criar conta grátis</button>
+            <a href="/signup" style={{ padding:"16px 36px",borderRadius:12,background:C.primary,color:"#1A1A1A",border:"none",fontSize:16,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 24px rgba(242,183,5,0.35)",textDecoration:"none",display:"inline-block" }}>Criar conta grátis</a>
           </div>
         </div>
       </section>
