@@ -2,14 +2,14 @@
 import { useState } from "react";
 
 const LIGHT = {
-  bg:"#FFFFFF",card:"#FFFFFF",surface:"#F8F8F6",
-  primary:"#F2B705",primaryDark:"#D9A004",primaryLight:"#FFF8E1",
+  bg:"#F2B705",card:"#1A1A1A",surface:"#D4A005",
+  primary:"#F2B705",primaryDark:"#D9A004",primaryLight:"#332B00",
   dark:"#1A1A1A",darkSoft:"#2A2A2A",
-  text:"#1A1A1A",textSec:"#5A5A5A",textTer:"#9A9A9A",
-  border:"#E5E5E5",divider:"#F0F0F0",
-  green:"#2E7D32",greenLight:"#E8F5E9",
+  text:"#F0F0F0",textSec:"#CCCCCC",textTer:"#888888",
+  border:"#333333",divider:"#2A2A2A",
+  green:"#66BB6A",greenLight:"#1B3A1D",
   heroGradient:"linear-gradient(160deg, #1A1A1A 0%, #2A2A2A 60%, #3A3A3A 100%)",
-  navBg:"rgba(255,255,255,0.95)",
+  navBg:"rgba(26,26,26,0.95)",
 };
 const DARK = {
   bg:"#121212",card:"#1E1E1E",surface:"#252525",
@@ -33,7 +33,7 @@ export default function Home() {
         <div style={{ maxWidth:1100,margin:"0 auto",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:64 }}>
           <a href="/" style={{ display:"flex",alignItems:"center",gap:8,textDecoration:"none" }}>
             <div style={{ width:36,height:36,borderRadius:10,background:C.primary,display:"flex",alignItems:"center",justifyContent:"center",color:"#1A1A1A",fontWeight:900,fontSize:15 }}>FX</div>
-            <span style={{ fontSize:20,fontWeight:800,color:C.text }}>Fix<span style={{ color:C.primary }}>IMOB</span></span>
+            <span style={{ fontSize:20,fontWeight:800,color:"#F2B705" }}>Fix<span style={{ color:"#F2B705" }}>IMOB</span></span>
           </a>
           <div style={{ display:"flex",alignItems:"center",gap:20 }}>
             <button onClick={() => setDark(!dark)} style={{ width:36,height:36,borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,cursor:"pointer",fontSize:16 }}>{dark ? "☀️" : "🌙"}</button>

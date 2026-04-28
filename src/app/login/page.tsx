@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 const C = {
-  primary: "#F2B705", primaryLight: "#FFF8E1",
-  dark: "#1A1A1A", text: "#1A1A1A", textSec: "#5A5A5A", textTer: "#9A9A9A",
-  border: "#E5E5E5", card: "#FFFFFF", surface: "#F8F8F6",
-  red: "#C62828", green: "#2E7D32",
+  primary: "#F2B705", primaryLight: "#332B00",
+  dark: "#1A1A1A", text: "#F0F0F0", textSec: "#CCCCCC", textTer: "#888888",
+  border: "#333333", card: "#1A1A1A", surface: "#F2B705",
+  red: "#EF5350", green: "#66BB6A",
 };
 
 export default function LoginPage() {
@@ -59,18 +59,18 @@ export default function LoginPage() {
           <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Email</label>
           <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
             placeholder="seu@email.com"
-            style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 16, outline: "none", boxSizing: "border-box" }} />
+            style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 16, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
           <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Senha</label>
           <input type="password" required value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
             placeholder="Sua senha"
-            style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 8, outline: "none", boxSizing: "border-box" }} />
+            style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 8, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
           <div style={{ textAlign: "right", marginBottom: 20 }}>
             <a href="#" style={{ fontSize: 13, color: C.primary, textDecoration: "none", fontWeight: 600 }}>Esqueci minha senha</a>
           </div>
 
-          {error && <div style={{ padding: 12, background: "#FFEBEE", color: C.red, borderRadius: 8, fontSize: 13, marginBottom: 14 }}>{error}</div>}
+          {error && <div style={{ padding: 12, background: "#3A1A1A", color: C.red, borderRadius: 8, fontSize: 13, marginBottom: 14 }}>{error}</div>}
 
           <button type="submit" disabled={loading}
             style={{ width: "100%", padding: "14px 0", borderRadius: 10, background: loading ? C.textTer : C.primary, color: C.dark, border: "none", fontSize: 15, fontWeight: 700, cursor: loading ? "default" : "pointer", marginBottom: 16 }}>

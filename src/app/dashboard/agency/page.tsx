@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 const C = {
-  primary:"#F2B705",primaryLight:"#FFF8E1",primaryText:"#1A1A1A",
-  dark:"#1A1A1A",bg:"#F5F5F3",card:"#FFFFFF",
-  text:"#1A1A1A",textSec:"#5A5A5A",textTer:"#9A9A9A",
-  border:"#E5E5E5",divider:"#EFEFEF",
-  green:"#2E7D32",greenLight:"#E8F5E9",
-  red:"#C62828",redLight:"#FFEBEE",
-  amber:"#E65100",amberLight:"#FFF3E0",
+  primary:"#F2B705",primaryLight:"#332B00",primaryText:"#1A1A1A",
+  dark:"#1A1A1A",bg:"#F2B705",card:"#1A1A1A",
+  text:"#F0F0F0",textSec:"#CCCCCC",textTer:"#888888",
+  border:"#333333",divider:"#2A2A2A",
+  green:"#66BB6A",greenLight:"#1B3A1D",
+  red:"#EF5350",redLight:"#3A1A1A",
+  amber:"#FFB74D",amberLight:"#3A2A00",
 };
 
 const CHECKLIST_ITEMS = ["Pintura das paredes","Piso e revestimentos","Portas e janelas","Instalações elétricas","Instalações hidráulicas","Fechaduras e chaves","Vidros e espelhos","Área externa/varanda"];
@@ -189,7 +189,7 @@ export default function AgencyPage() {
           {/* PAYMENTS TAB */}
           {propTab === "payments" && <>
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16 }}>
-              <div style={{ background:C.primaryLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:"#7a6000" }}>Aluguel</div><div style={{ fontSize:20,fontWeight:800,color:C.primaryText,marginTop:4 }}>R$ {selectedProp.rent_amount?.toLocaleString("pt-BR")}</div></div>
+              <div style={{ background:C.primaryLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:"#F2B705" }}>Aluguel</div><div style={{ fontSize:20,fontWeight:800,color:C.primaryText,marginTop:4 }}>R$ {selectedProp.rent_amount?.toLocaleString("pt-BR")}</div></div>
               <div style={{ background:C.greenLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:C.green }}>Condomínio</div><div style={{ fontSize:20,fontWeight:800,color:C.green,marginTop:4 }}>R$ {(selectedProp.condo_amount||0).toLocaleString("pt-BR")}</div></div>
             </div>
             <div style={{ display:"flex",justifyContent:"space-between",marginBottom:10 }}><span style={{ fontSize:14,fontWeight:700,color:C.text }}>Histórico</span>
@@ -204,7 +204,7 @@ export default function AgencyPage() {
                   <span style={{ fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:5,background:p.agency_confirmed?C.greenLight:C.amberLight,color:p.agency_confirmed?C.green:C.amber }}>Imobiliária {p.agency_confirmed?"✓":"⏳"}</span>
                   <span style={{ fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:5,background:p.landlord_confirmed?C.greenLight:C.amberLight,color:p.landlord_confirmed?C.green:C.amber }}>Proprietário {p.landlord_confirmed?"✓":"⏳"}</span>
                 </div>
-                {!p.landlord_confirmed && <button onClick={() => confirmLandlord(p.id)} style={{ width:"100%",marginTop:8,padding:"8px 0",borderRadius:8,background:C.green,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Confirmar repasse ao proprietário</button>}
+                {!p.landlord_confirmed && <button onClick={() => confirmLandlord(p.id)} style={{ width:"100%",marginTop:8,padding:"8px 0",borderRadius:8,background:C.dark,color:C.primary,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Confirmar repasse ao proprietário</button>}
               </div>
             ))}
           </>}
@@ -212,7 +212,7 @@ export default function AgencyPage() {
           {/* TICKETS TAB */}
           {propTab === "tickets" && <>
             <div style={{ display:"flex",justifyContent:"space-between",marginBottom:10 }}><span style={{ fontSize:14,fontWeight:700,color:C.text }}>Chamados</span>
-              <button onClick={() => setShowAddTicket(true)} style={{ padding:"6px 14px",borderRadius:8,background:C.amber,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Novo</button>
+              <button onClick={() => setShowAddTicket(true)} style={{ padding:"6px 14px",borderRadius:8,background:C.dark,color:C.primary,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Novo</button>
             </div>
             {propTickets.length === 0 ? <div style={{ textAlign:"center",padding:30,color:C.textTer,fontSize:13 }}>Nenhum chamado</div>
             : propTickets.map(t => (
@@ -223,7 +223,7 @@ export default function AgencyPage() {
                 {t.description && <div style={{ fontSize:12,color:C.textSec,marginTop:4,lineHeight:1.5 }}>{t.description}</div>}
                 <div style={{ fontSize:11,color:C.textTer,marginTop:6 }}>{new Date(t.created_at).toLocaleDateString("pt-BR")} • Prioridade: {t.priority==="high"?"Alta":t.priority==="medium"?"Média":"Baixa"}</div>
                 {t.status==="open" && <div style={{ display:"flex",gap:6,marginTop:8 }}>
-                  <button onClick={async () => { await supabase.from("maintenance_tickets").update({status:"in_progress"}).eq("id",t.id); setTickets(prev=>prev.map(x=>x.id===t.id?{...x,status:"in_progress"}:x)); }} style={{ flex:1,padding:"7px 0",borderRadius:8,background:C.amber,color:"#fff",border:"none",fontSize:11,fontWeight:700,cursor:"pointer" }}>Iniciar</button>
+                  <button onClick={async () => { await supabase.from("maintenance_tickets").update({status:"in_progress"}).eq("id",t.id); setTickets(prev=>prev.map(x=>x.id===t.id?{...x,status:"in_progress"}:x)); }} style={{ flex:1,padding:"7px 0",borderRadius:8,background:C.dark,color:C.primary,border:"none",fontSize:11,fontWeight:700,cursor:"pointer" }}>Iniciar</button>
                   <button onClick={() => router.push("/dashboard")} style={{ flex:1,padding:"7px 0",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:11,fontWeight:700,cursor:"pointer" }}>Buscar prestador</button>
                 </div>}
                 {t.status==="in_progress" && <button onClick={async () => { await supabase.from("maintenance_tickets").update({status:"resolved",resolved_at:new Date().toISOString()}).eq("id",t.id); setTickets(prev=>prev.map(x=>x.id===t.id?{...x,status:"resolved"}:x)); }} style={{ width:"100%",marginTop:8,padding:"7px 0",borderRadius:8,background:C.green,color:"#fff",border:"none",fontSize:11,fontWeight:700,cursor:"pointer" }}>Marcar resolvido</button>}
@@ -234,14 +234,14 @@ export default function AgencyPage() {
           {/* CONTRACTS TAB */}
           {propTab === "contracts" && !viewContract && <>
             <div style={{ display:"flex",justifyContent:"space-between",marginBottom:10 }}><span style={{ fontSize:14,fontWeight:700,color:C.text }}>Contratos</span>
-              <button onClick={() => { setContractForm({...contractForm,rent:String(selectedProp.rent_amount),condo:String(selectedProp.condo_amount||0)}); setShowAddContract(true); }} style={{ padding:"6px 14px",borderRadius:8,background:C.green,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Criar</button>
+              <button onClick={() => { setContractForm({...contractForm,rent:String(selectedProp.rent_amount),condo:String(selectedProp.condo_amount||0)}); setShowAddContract(true); }} style={{ padding:"6px 14px",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Criar</button>
             </div>
             {propContracts.length === 0 ? <div style={{ textAlign:"center",padding:30,color:C.textTer,fontSize:13 }}>Nenhum contrato</div>
             : propContracts.map(c => (
               <div key={c.id} style={{ background:C.card,borderRadius:12,padding:14,border:`1px solid ${C.border}`,marginBottom:8 }}>
                 <div style={{ display:"flex",justifyContent:"space-between",marginBottom:6 }}>
                   <span style={{ fontSize:14,fontWeight:700,color:C.text }}>Contrato de Locação</span>
-                  <span style={{ fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:5,background:c.status==="signed"?C.greenLight:c.status==="tenant_signed"?"#E3F2FD":c.status==="sent"?C.amberLight:C.divider,color:c.status==="signed"?C.green:c.status==="tenant_signed"?"#1565C0":c.status==="sent"?C.amber:C.textTer }}>
+                  <span style={{ fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:5,background:c.status==="signed"?C.greenLight:c.status==="tenant_signed"?C.primaryLight:c.status==="sent"?C.amberLight:C.divider,color:c.status==="signed"?C.green:c.status==="tenant_signed"?C.dark:c.status==="sent"?C.amber:C.textTer }}>
                     {c.status==="signed"?"✓ Assinado":c.status==="tenant_signed"?"Locatário assinou":c.status==="sent"?"Aguardando assinatura":"Rascunho"}
                   </span>
                 </div>
@@ -252,7 +252,7 @@ export default function AgencyPage() {
                   <div>Valor: <strong style={{ color:C.primary }}>R$ {c.rent_amount?.toLocaleString("pt-BR")}/mês</strong>{c.condo_amount > 0 && ` + R$ ${c.condo_amount?.toLocaleString("pt-BR")} cond.`}</div>
                 </div>
                 <div style={{ display:"flex",gap:6,marginTop:10 }}>
-                  <button onClick={() => setViewContract(c)} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.primaryLight,color:"#7a6000",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ver contrato</button>
+                  <button onClick={() => setViewContract(c)} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.primaryLight,color:"#F2B705",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ver contrato</button>
                   {c.status==="draft" && <button onClick={async () => { await supabase.from("contracts").update({status:"sent"}).eq("id",c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,status:"sent"}:x)); }} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Enviar para assinatura</button>}
                   {c.status==="tenant_signed" && <button onClick={async () => { await supabase.from("contracts").update({status:"signed",signed_at:new Date().toISOString()}).eq("id",c.id); setContracts(prev=>prev.map(x=>x.id===c.id?{...x,status:"signed",signed_at:new Date().toISOString()}:x)); }} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.green,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Confirmar assinatura locador</button>}
                 </div>
@@ -277,13 +277,13 @@ export default function AgencyPage() {
                 <div style={{ padding:20 }}>
                   <div style={{ fontSize:13,fontWeight:700,color:C.text,marginBottom:12,textTransform:"uppercase",letterSpacing:.5,borderBottom:`2px solid ${C.primary}`,paddingBottom:6 }}>Partes envolvidas</div>
                   <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:20 }}>
-                    <div style={{ padding:14,background:C.bg,borderRadius:10 }}>
+                    <div style={{ padding:14,background:"#2A2A2A",borderRadius:10 }}>
                       <div style={{ fontSize:10,fontWeight:700,color:C.primary,textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>Locador (Proprietário)</div>
                       <div style={{ fontSize:14,fontWeight:700,color:C.text }}>{selectedProp.landlord_name}</div>
                       {selectedProp.landlord_phone && <div style={{ fontSize:12,color:C.textSec,marginTop:2 }}>{selectedProp.landlord_phone}</div>}
                       {selectedProp.landlord_email && <div style={{ fontSize:12,color:C.textSec }}>{selectedProp.landlord_email}</div>}
                     </div>
-                    <div style={{ padding:14,background:C.bg,borderRadius:10 }}>
+                    <div style={{ padding:14,background:"#2A2A2A",borderRadius:10 }}>
                       <div style={{ fontSize:10,fontWeight:700,color:C.primary,textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>Locatário (Inquilino)</div>
                       <div style={{ fontSize:14,fontWeight:700,color:C.text }}>{viewContract.tenant_name}</div>
                       {viewContract.tenant_cpf && <div style={{ fontSize:12,color:C.textSec,marginTop:2 }}>CPF: {viewContract.tenant_cpf}</div>}
@@ -291,7 +291,7 @@ export default function AgencyPage() {
                   </div>
 
                   <div style={{ fontSize:13,fontWeight:700,color:C.text,marginBottom:12,textTransform:"uppercase",letterSpacing:.5,borderBottom:`2px solid ${C.primary}`,paddingBottom:6 }}>Objeto da locação</div>
-                  <div style={{ padding:14,background:C.bg,borderRadius:10,marginBottom:20 }}>
+                  <div style={{ padding:14,background:"#2A2A2A",borderRadius:10,marginBottom:20 }}>
                     <div style={{ fontSize:13,color:C.textSec,lineHeight:1.8 }}>
                       <div>Endereço: <strong style={{ color:C.text }}>{selectedProp.address}</strong></div>
                       {selectedProp.unit && <div>Unidade: <strong style={{ color:C.text }}>{selectedProp.unit}</strong></div>}
@@ -301,14 +301,14 @@ export default function AgencyPage() {
                   </div>
 
                   <div style={{ fontSize:13,fontWeight:700,color:C.text,marginBottom:12,textTransform:"uppercase",letterSpacing:.5,borderBottom:`2px solid ${C.primary}`,paddingBottom:6 }}>Condições financeiras</div>
-                  <div style={{ padding:14,background:C.bg,borderRadius:10,marginBottom:20 }}>
+                  <div style={{ padding:14,background:"#2A2A2A",borderRadius:10,marginBottom:20 }}>
                     <div style={{ display:"flex",justifyContent:"space-between",padding:"6px 0",fontSize:13,borderBottom:`1px solid ${C.divider}` }}><span style={{ color:C.textSec }}>Aluguel mensal</span><span style={{ fontWeight:700,color:C.text }}>R$ {viewContract.rent_amount?.toLocaleString("pt-BR",{minimumFractionDigits:2})}</span></div>
                     {viewContract.condo_amount > 0 && <div style={{ display:"flex",justifyContent:"space-between",padding:"6px 0",fontSize:13,borderBottom:`1px solid ${C.divider}` }}><span style={{ color:C.textSec }}>Condomínio</span><span style={{ fontWeight:700,color:C.text }}>R$ {viewContract.condo_amount?.toLocaleString("pt-BR",{minimumFractionDigits:2})}</span></div>}
                     <div style={{ display:"flex",justifyContent:"space-between",padding:"8px 0 0",fontSize:14,fontWeight:800 }}><span>Total mensal</span><span style={{ color:C.primary }}>R$ {((viewContract.rent_amount||0)+(viewContract.condo_amount||0)).toLocaleString("pt-BR",{minimumFractionDigits:2})}</span></div>
                   </div>
 
                   <div style={{ fontSize:13,fontWeight:700,color:C.text,marginBottom:12,textTransform:"uppercase",letterSpacing:.5,borderBottom:`2px solid ${C.primary}`,paddingBottom:6 }}>Vigência</div>
-                  <div style={{ padding:14,background:C.bg,borderRadius:10,marginBottom:20 }}>
+                  <div style={{ padding:14,background:"#2A2A2A",borderRadius:10,marginBottom:20 }}>
                     <div style={{ display:"flex",justifyContent:"space-between",fontSize:13 }}>
                       <div><div style={{ fontSize:10,color:C.textTer }}>Início</div><div style={{ fontWeight:700,color:C.text,marginTop:2 }}>{viewContract.start_date}</div></div>
                       <div style={{ fontSize:20,color:C.border }}>→</div>
@@ -372,7 +372,7 @@ export default function AgencyPage() {
                         Aguardando assinatura do locatário. Quando o locatário acessar o app, ele poderá visualizar e assinar este contrato.
                       </div>
                       <button onClick={async () => { await supabase.from("contracts").update({status:"tenant_signed"}).eq("id",viewContract.id); setViewContract({...viewContract,status:"tenant_signed"}); setContracts(prev=>prev.map(x=>x.id===viewContract.id?{...x,status:"tenant_signed"}:x)); }}
-                        style={{ width:"100%",padding:"14px 0",borderRadius:10,background:"#1565C0",color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>
+                        style={{ width:"100%",padding:"14px 0",borderRadius:10,background:C.dark,color:C.primary,border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>
                         Simular: Locatário assinou ✓
                       </button>
                     </div>
@@ -380,7 +380,7 @@ export default function AgencyPage() {
 
                   {viewContract.status === "tenant_signed" && (
                     <div>
-                      <div style={{ padding:12,background:"#E3F2FD",borderRadius:10,marginBottom:12,fontSize:12,color:"#1565C0",lineHeight:1.5 }}>
+                      <div style={{ padding:12,background:C.primaryLight,borderRadius:10,marginBottom:12,fontSize:12,color:"#F2B705",lineHeight:1.5 }}>
                         ✓ Locatário assinou. Falta a assinatura do locador (proprietário) para concluir o contrato.
                       </div>
                       <button onClick={async () => { const now = new Date().toISOString(); await supabase.from("contracts").update({status:"signed",signed_at:now}).eq("id",viewContract.id); setViewContract({...viewContract,status:"signed",signed_at:now}); setContracts(prev=>prev.map(x=>x.id===viewContract.id?{...x,status:"signed",signed_at:now}:x)); }}
@@ -403,7 +403,7 @@ export default function AgencyPage() {
             {/* INSPECTIONS TAB */}
           {propTab === "inspections" && <>
             <div style={{ display:"flex",justifyContent:"space-between",marginBottom:10 }}><span style={{ fontSize:14,fontWeight:700,color:C.text }}>Vistorias</span>
-              <button onClick={() => setShowAddInspection(true)} style={{ padding:"6px 14px",borderRadius:8,background:C.amber,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Nova</button>
+              <button onClick={() => setShowAddInspection(true)} style={{ padding:"6px 14px",borderRadius:8,background:C.dark,color:C.primary,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Nova</button>
             </div>
             {propInspections.length === 0 ? <div style={{ textAlign:"center",padding:30,color:C.textTer,fontSize:13 }}>Nenhuma vistoria</div>
             : propInspections.map(ins => {
@@ -433,7 +433,7 @@ export default function AgencyPage() {
           <div style={{ display:"flex",justifyContent:"space-between",marginBottom:16 }}><span style={{ fontSize:16,fontWeight:700 }}>Registrar Pagamento</span><button onClick={() => setShowAddPayment(false)} style={{ background:"none",border:"none",cursor:"pointer",fontSize:18 }}>✕</button></div>
           <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Mês referência *</label>
           <input value={payForm.monthRef} onChange={e => setPayForm({...payForm,monthRef:e.target.value})} placeholder="Ex: Abr/2026" style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:12,outline:"none",boxSizing:"border-box" }} />
-          <div style={{ background:C.bg,borderRadius:10,padding:12,marginBottom:12 }}>
+          <div style={{ background:"#2A2A2A",borderRadius:10,padding:12,marginBottom:12 }}>
             <div style={{ display:"flex",justifyContent:"space-between",fontSize:13 }}><span style={{ color:C.textSec }}>Aluguel</span><span style={{ fontWeight:700 }}>R$ {selectedProp.rent_amount?.toLocaleString("pt-BR")}</span></div>
             <div style={{ display:"flex",justifyContent:"space-between",fontSize:13,marginTop:4 }}><span style={{ color:C.textSec }}>Condomínio</span><span style={{ fontWeight:700 }}>R$ {(selectedProp.condo_amount||0).toLocaleString("pt-BR")}</span></div>
             <div style={{ display:"flex",justifyContent:"space-between",fontSize:14,fontWeight:800,marginTop:8,paddingTop:8,borderTop:`1px solid ${C.divider}` }}><span>Total</span><span style={{ color:C.primary }}>R$ {(selectedProp.rent_amount+(selectedProp.condo_amount||0)).toLocaleString("pt-BR")}</span></div>
@@ -442,7 +442,7 @@ export default function AgencyPage() {
           <select value={payForm.method} onChange={e => setPayForm({...payForm,method:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:16,background:C.card }}>
             <option value="pix">PIX</option><option value="boleto">Boleto</option><option value="credit">Crédito</option><option value="debit">Débito</option>
           </select>
-          <button onClick={handleAddPayment} disabled={!payForm.monthRef||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:payForm.monthRef&&!saving?C.green:C.textTer,color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:payForm.monthRef&&!saving?"pointer":"default" }}>{saving?"Salvando...":"Confirmar pagamento"}</button>
+          <button onClick={handleAddPayment} disabled={!payForm.monthRef||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:payForm.monthRef&&!saving?C.primary:C.textTer,color:C.primaryText,border:"none",fontSize:14,fontWeight:700,cursor:payForm.monthRef&&!saving?"pointer":"default" }}>{saving?"Salvando...":"Confirmar pagamento"}</button>
         </div></div>}
 
         {showAddTicket && <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:50,display:"flex",alignItems:"flex-end",justifyContent:"center" }}><div style={{ background:C.card,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:500,maxHeight:"80vh",overflow:"auto",padding:24 }}>
@@ -452,7 +452,7 @@ export default function AgencyPage() {
           <select value={ticketForm.priority} onChange={e => setTicketForm({...ticketForm,priority:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:16,background:C.card }}>
             <option value="low">Prioridade: Baixa</option><option value="medium">Prioridade: Média</option><option value="high">Prioridade: Alta</option>
           </select>
-          <button onClick={handleAddTicket} disabled={!ticketForm.title||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:ticketForm.title&&!saving?C.amber:C.textTer,color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:ticketForm.title&&!saving?"pointer":"default" }}>{saving?"Salvando...":"Abrir chamado"}</button>
+          <button onClick={handleAddTicket} disabled={!ticketForm.title||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:ticketForm.title&&!saving?C.primary:C.textTer,color:C.primaryText,border:"none",fontSize:14,fontWeight:700,cursor:ticketForm.title&&!saving?"pointer":"default" }}>{saving?"Salvando...":"Abrir chamado"}</button>
         </div></div>}
 
         {showAddContract && <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:50,display:"flex",alignItems:"flex-end",justifyContent:"center" }}><div style={{ background:C.card,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:500,maxHeight:"85vh",overflow:"auto",padding:24 }}>
@@ -465,7 +465,7 @@ export default function AgencyPage() {
           <select value={contractForm.paymentMode} onChange={e => setContractForm({...contractForm,paymentMode:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:16,background:C.card }}>
             <option value="via_agency">Pagamento via imobiliária</option><option value="direct">Pagamento direto</option>
           </select>
-          <button onClick={handleAddContract} disabled={!contractForm.tenantName||!contractForm.startDate||!contractForm.endDate||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:contractForm.tenantName&&contractForm.startDate&&!saving?C.green:C.textTer,color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>{saving?"Salvando...":"Criar contrato"}</button>
+          <button onClick={handleAddContract} disabled={!contractForm.tenantName||!contractForm.startDate||!contractForm.endDate||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:contractForm.tenantName&&contractForm.startDate&&!saving?C.primary:C.textTer,color:C.primaryText,border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>{saving?"Salvando...":"Criar contrato"}</button>
         </div></div>}
 
         {showAddInspection && <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:50,display:"flex",alignItems:"flex-end",justifyContent:"center" }}><div style={{ background:C.card,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:500,maxHeight:"85vh",overflow:"auto",padding:24 }}>
@@ -480,7 +480,7 @@ export default function AgencyPage() {
             </label>
           ))}
           <textarea value={inspForm.notes} onChange={e => setInspForm({...inspForm,notes:e.target.value})} placeholder="Observações (opcional)" style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginTop:12,marginBottom:16,outline:"none",boxSizing:"border-box",minHeight:60,resize:"vertical",fontFamily:"inherit" }} />
-          <button onClick={handleAddInspection} disabled={saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:saving?C.textTer:C.amber,color:"#fff",border:"none",fontSize:14,fontWeight:700,cursor:saving?"default":"pointer" }}>{saving?"Salvando...":"Salvar vistoria"}</button>
+          <button onClick={handleAddInspection} disabled={saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:saving?C.textTer:C.dark,color:C.primary,border:"none",fontSize:14,fontWeight:700,cursor:saving?"default":"pointer" }}>{saving?"Salvando...":"Salvar vistoria"}</button>
         </div></div>}
       </div>
     );
@@ -552,7 +552,7 @@ export default function AgencyPage() {
                   {pr.condo_amount > 0 && <span>+ R$ {pr.condo_amount?.toLocaleString("pt-BR")} cond.</span>}
                 </div>
                 {pr.tenant_name && <div style={{ fontSize:11,color:C.textTer,marginTop:6 }}>Inquilino: {pr.tenant_name} | Proprietário: {pr.landlord_name}</div>}
-                <div style={{ marginTop:6 }}><span style={{ fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:5,background:C.primaryLight,color:"#7a6000" }}>{pr.payment_mode==="via_agency"?"Via imobiliária":"Direto"}</span></div>
+                <div style={{ marginTop:6 }}><span style={{ fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:5,background:C.primaryLight,color:"#F2B705" }}>{pr.payment_mode==="via_agency"?"Via imobiliária":"Direto"}</span></div>
               </button>
             ))}
           </div>

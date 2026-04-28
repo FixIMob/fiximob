@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 const C = {
-  primary:"#F2B705",primaryLight:"#FFF8E1",primaryText:"#1A1A1A",
-  dark:"#1A1A1A",bg:"#F5F5F3",card:"#FFFFFF",
-  text:"#1A1A1A",textSec:"#5A5A5A",textTer:"#9A9A9A",
-  border:"#E5E5E5",green:"#2E7D32",greenLight:"#E8F5E9",
-  amber:"#E65100",amberLight:"#FFF3E0",
+  primary:"#F2B705",primaryLight:"#332B00",primaryText:"#1A1A1A",
+  dark:"#1A1A1A",bg:"#F2B705",card:"#1A1A1A",
+  text:"#F0F0F0",textSec:"#CCCCCC",textTer:"#888888",
+  border:"#333333",green:"#66BB6A",greenLight:"#1B3A1D",
+  amber:"#FFB74D",amberLight:"#3A2A00",
 };
 
 const SVC_LIST = ["Arquiteto","Engenheiro","Elétrica","Hidráulica","Pedreiro","Climatização","Pintor","Marceneiro","Vidraceiro","Gesseiro","Pré Moldados"];
@@ -181,7 +181,7 @@ export default function PublicRequestPage() {
       <div style={{ maxWidth:500,margin:"0 auto",padding:20 }}>
         <div style={{ background:C.primaryLight,borderRadius:12,padding:14,marginBottom:18,display:"flex",gap:10 }}>
           <span style={{ fontSize:18 }}>📢</span>
-          <div style={{ fontSize:12,color:"#7a6000",lineHeight:1.6 }}>Solicitação pública. Você pode selecionar múltiplas categorias. Um código será gerado para prestadores responderem.</div>
+          <div style={{ fontSize:12,color:"#F2B705",lineHeight:1.6 }}>Solicitação pública. Você pode selecionar múltiplas categorias. Um código será gerado para prestadores responderem.</div>
         </div>
 
         <label style={{ display:"block",fontSize:13,fontWeight:700,color:C.text,marginBottom:6 }}>Área (m²) *</label>

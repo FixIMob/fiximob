@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 const C = {
-  bg: "#FFFFFF", card: "#FFFFFF", surface: "#F8F8F6",
-  primary: "#F2B705", primaryLight: "#FFF8E1",
-  dark: "#1A1A1A", text: "#1A1A1A", textSec: "#5A5A5A", textTer: "#9A9A9A",
-  border: "#E5E5E5", green: "#2E7D32", red: "#C62828",
+  bg: "#F2B705", card: "#1A1A1A", surface: "#F2B705",
+  primary: "#F2B705", primaryLight: "#332B00",
+  dark: "#1A1A1A", text: "#F0F0F0", textSec: "#CCCCCC", textTer: "#888888",
+  border: "#333333", green: "#66BB6A", red: "#EF5350",
 };
 
 export default function SignupPage() {
@@ -113,23 +113,23 @@ export default function SignupPage() {
             <form onSubmit={handleSignup}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Nome completo</label>
               <input type="text" required value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })}
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 14, outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 14, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Email</label>
               <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 14, outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 14, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Telefone</label>
               <input type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="(11) 99999-9999"
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 14, outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, marginBottom: 14, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Senha</label>
               <input type="password" required minLength={6} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Mínimo 6 caracteres"
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${form.password.length > 0 && form.password.length < 6 ? C.red : C.border}`, fontSize: 14, marginBottom: 14, outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${form.password.length > 0 && form.password.length < 6 ? C.red : C.border}`, fontSize: 14, marginBottom: 14, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>Confirmar senha</label>
               <input type="password" required value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })} placeholder="Digite a senha novamente"
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${form.confirmPassword.length > 0 && form.password !== form.confirmPassword ? C.red : form.confirmPassword.length > 0 && form.password === form.confirmPassword ? C.green : C.border}`, fontSize: 14, marginBottom: 6, outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${form.confirmPassword.length > 0 && form.password !== form.confirmPassword ? C.red : form.confirmPassword.length > 0 && form.password === form.confirmPassword ? C.green : C.border}`, fontSize: 14, marginBottom: 6, outline: "none", background: "#2A2A2A", color: "#F0F0F0", boxSizing: "border-box" }} />
 
               {form.confirmPassword.length > 0 && form.password !== form.confirmPassword && (
                 <div style={{ fontSize: 12, color: C.red, marginBottom: 14 }}>As senhas não coincidem</div>
@@ -139,7 +139,7 @@ export default function SignupPage() {
               )}
               {form.confirmPassword.length === 0 && <div style={{ marginBottom: 14 }} />}
 
-              {error && <div style={{ padding: 12, background: "#FFEBEE", color: C.red, borderRadius: 8, fontSize: 13, marginBottom: 14 }}>{error}</div>}
+              {error && <div style={{ padding: 12, background: "#3A1A1A", color: C.red, borderRadius: 8, fontSize: 13, marginBottom: 14 }}>{error}</div>}
 
               <button type="submit" disabled={loading || form.password !== form.confirmPassword}
                 style={{ width: "100%", padding: "14px 0", borderRadius: 10, background: loading || form.password !== form.confirmPassword ? C.textTer : C.primary, color: C.dark, border: "none", fontSize: 15, fontWeight: 700, cursor: loading || form.password !== form.confirmPassword ? "default" : "pointer" }}>

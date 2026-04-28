@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 const C = {
-  primary:"#F2B705",primaryLight:"#FFF8E1",primaryText:"#1A1A1A",
-  dark:"#1A1A1A",bg:"#F5F5F3",card:"#FFFFFF",
-  text:"#1A1A1A",textSec:"#5A5A5A",textTer:"#9A9A9A",
-  border:"#E5E5E5",divider:"#EFEFEF",
-  green:"#2E7D32",greenLight:"#E8F5E9",
-  red:"#C62828",redLight:"#FFEBEE",
-  amber:"#E65100",amberLight:"#FFF3E0",
+  primary:"#F2B705",primaryLight:"#332B00",primaryText:"#1A1A1A",
+  dark:"#1A1A1A",bg:"#F2B705",card:"#1A1A1A",
+  text:"#F0F0F0",textSec:"#CCCCCC",textTer:"#888888",
+  border:"#333333",divider:"#2A2A2A",
+  green:"#66BB6A",greenLight:"#1B3A1D",
+  red:"#EF5350",redLight:"#3A1A1A",
+  amber:"#FFB74D",amberLight:"#3A2A00",
 };
 
 const paths: Record<string,string> = {
@@ -295,7 +295,7 @@ export default function DashboardPage() {
               <div style={{ marginTop:12 }}>
                 {items.map((it:any,i:number) => (
                   <div key={i} style={{ display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:`1px solid ${C.divider}`,fontSize:13 }}>
-                    <span style={{ color:C.textSec }}>{it.description}</span>
+                    <span style={{ color:"#FFFFFF" }}>{it.description}</span>
                     <span style={{ fontWeight:700,color:C.text }}>R$ {it.value.toLocaleString("pt-BR")}</span>
                   </div>
                 ))}
@@ -316,7 +316,7 @@ export default function DashboardPage() {
               <Ic name="shield" size={16} color={C.green}/>
               <span style={{ fontSize:12,color:C.green,lineHeight:1.5 }}>Escrow: Seu dinheiro fica protegido até a conclusão. Repasse ao prestador no dia 28.</span>
             </div>
-            <button onClick={handlePayment} disabled={payLoading} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:payLoading?C.textTer:C.green,color:"#fff",border:"none",fontSize:15,fontWeight:700,cursor:payLoading?"default":"pointer" }}>
+            <button onClick={handlePayment} disabled={payLoading} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:payLoading?C.textTer:C.dark,color:C.primary,border:"none",fontSize:15,fontWeight:700,cursor:payLoading?"default":"pointer" }}>
               {payLoading ? "Processando..." : `Confirmar R$ ${activeProposal.total_amount.toLocaleString("pt-BR",{minimumFractionDigits:2})}`}
             </button>
           </div>
@@ -335,15 +335,15 @@ export default function DashboardPage() {
         </div>
         <div style={{ flex:1,overflow:"auto",padding:20 }}>
           <div style={{ maxWidth:500,margin:"0 auto" }}>
-            <div style={{ background:C.primaryLight,borderRadius:12,padding:14,marginBottom:18,display:"flex",gap:10 }}>
+            <div style={{ background:"#332B00",borderRadius:12,padding:14,marginBottom:18,display:"flex",gap:10 }}>
               <Ic name="clipboard" size={20} color={C.primary}/>
-              <div style={{ fontSize:12,color:"#7a6000",lineHeight:1.6 }}>Preencha para facilitar o orçamento do prestador. Todos os campos são obrigatórios.</div>
+              <div style={{ fontSize:12,color:"#F2B705",lineHeight:1.6 }}>Preencha para facilitar o orçamento do prestador. Todos os campos são obrigatórios.</div>
             </div>
             <label style={{ display:"block",fontSize:13,fontWeight:700,color:C.text,marginBottom:6 }}>Área (m²) *</label>
             <input type="number" value={checklist.area} onChange={e => setChecklist({...checklist,area:e.target.value})} placeholder="Ex: 45"
               style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,outline:"none",boxSizing:"border-box",background:C.card,color:C.text }} />
             <label style={{ display:"block",fontSize:13,fontWeight:700,color:C.text,marginBottom:6 }}>Serviço</label>
-            <div style={{ padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,background:"#F0F0F0",color:C.textSec,boxSizing:"border-box" as const }}>{selectedProvider?.category || "—"}</div>
+            <div style={{ padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,background:"#2A2A2A",color:C.textSec,boxSizing:"border-box" as const }}>{selectedProvider?.category || "—"}</div>
             <label style={{ display:"block",fontSize:13,fontWeight:700,color:C.text,marginBottom:6 }}>Prazo desejado *</label>
             <select value={checklist.timeline} onChange={e => setChecklist({...checklist,timeline:e.target.value})} style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,background:C.card,color:checklist.timeline?C.text:C.textTer }}>
               <option value="">Selecione...</option><option>Até 15 dias</option><option>Até 1 mês</option><option>Até 2 meses</option><option>Até 3 meses</option><option>Até 6 meses</option><option>Sem urgência</option>
@@ -387,13 +387,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div style={{ maxWidth:900,margin:"0 auto",padding:"16px 20px" }}>
-            {profile?.user_type === "agency" && <button onClick={() => router.push("/dashboard/agency")} style={{ display:"flex",alignItems:"center",gap:10,width:"100%",padding:14,background:C.dark,border:"none",borderRadius:12,cursor:"pointer",marginBottom:10,textAlign:"left" }}><span style={{ fontSize:22 }}>🏢</span><div style={{ flex:1 }}><div style={{ fontSize:14,fontWeight:700,color:C.primary }}>Painel da Imobiliária</div><div style={{ fontSize:11,color:"rgba(255,255,255,.5)" }}>Imóveis, contratos, vistorias e cobranças</div></div><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth={1.8}><path d="M9 5l7 7-7 7"/></svg></button>}<button onClick={() => router.push("/dashboard/request")} style={{ display:"flex",alignItems:"center",gap:10,width:"100%",padding:14,background:C.primaryLight,border:`1.5px solid ${C.primary}`,borderRadius:12,cursor:"pointer",marginBottom:16,textAlign:"left" }}><span style={{ fontSize:22 }}>📢</span><div style={{ flex:1 }}><div style={{ fontSize:14,fontWeight:700,color:C.primaryText }}>Solicitar orçamento geral</div><div style={{ fontSize:11,color:"#7a6000" }}>Receba propostas de múltiplos prestadores</div></div><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={C.textTer} strokeWidth={1.8}><path d="M9 5l7 7-7 7"/></svg></button><div style={{ fontSize:14,fontWeight:700,color:C.text,marginBottom:10 }}>Categorias</div>
+            {profile?.user_type === "agency" && <button onClick={() => router.push("/dashboard/agency")} style={{ display:"flex",alignItems:"center",gap:10,width:"100%",padding:14,background:C.dark,border:"none",borderRadius:12,cursor:"pointer",marginBottom:10,textAlign:"left" }}><span style={{ fontSize:22 }}>🏢</span><div style={{ flex:1 }}><div style={{ fontSize:14,fontWeight:700,color:C.primary }}>Painel da Imobiliária</div><div style={{ fontSize:11,color:"rgba(255,255,255,.5)" }}>Imóveis, contratos, vistorias e cobranças</div></div><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth={1.8}><path d="M9 5l7 7-7 7"/></svg></button>}<button onClick={() => router.push("/dashboard/request")} style={{ display:"flex",alignItems:"center",gap:10,width:"100%",padding:14,background:C.primaryLight,border:`1.5px solid ${C.primary}`,borderRadius:12,cursor:"pointer",marginBottom:16,textAlign:"left" }}><span style={{ fontSize:22 }}>📢</span><div style={{ flex:1 }}><div style={{ fontSize:14,fontWeight:700,color:"#F2B705" }}>Solicitar orçamento geral</div><div style={{ fontSize:11,color:"#FFFFFF" }}>Receba propostas de múltiplos prestadores</div></div><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={C.textTer} strokeWidth={1.8}><path d="M9 5l7 7-7 7"/></svg></button><div style={{ fontSize:14,fontWeight:700,color:"#1A1A1A",marginBottom:10 }}>Categorias</div>
             <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(72px, 1fr))",gap:8,marginBottom:20 }}>
               {[{e:"📐",l:"Arquiteto"},{e:"🏗️",l:"Engenheiro"},{e:"⚡",l:"Elétrica"},{e:"🔧",l:"Hidráulica"},{e:"🧱",l:"Pedreiro"},{e:"❄️",l:"Clima"},{e:"🎨",l:"Pintor"},{e:"🪵",l:"Marceneiro"}].map((c,i) => (
-                <button key={i} onClick={() => { setActiveCategory(c.l==="Clima"?"Climatização":c.l); setTab("search"); }} style={{ background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:"10px 2px 8px",display:"flex",flexDirection:"column",alignItems:"center",gap:4,cursor:"pointer" }}><span style={{ fontSize:20 }}>{c.e}</span><span style={{ fontSize:10,color:C.textSec }}>{c.l}</span></button>
+                <button key={i} onClick={() => { setActiveCategory(c.l==="Clima"?"Climatização":c.l); setTab("search"); }} style={{ background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:"10px 2px 8px",display:"flex",flexDirection:"column",alignItems:"center",gap:4,cursor:"pointer" }}><span style={{ fontSize:20 }}>{c.e}</span><span style={{ fontSize:10,color:"#F0F0F0" }}>{c.l}</span></button>
               ))}
             </div>
-            <div style={{ fontSize:14,fontWeight:700,color:C.text,marginBottom:10 }}>Destaques</div>
+            <div style={{ fontSize:14,fontWeight:700,color:"#1A1A1A",marginBottom:10 }}>Destaques</div>
             <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:10 }}>
               {providers.filter(p => p.verified).slice(0,6).map(p => (
                 <button key={p.id} onClick={() => setSelectedProvider(p)} style={{ display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,cursor:"pointer",width:"100%",textAlign:"left" }}>
@@ -437,10 +437,10 @@ export default function DashboardPage() {
         <div style={{ flex:1,overflow:"auto",paddingBottom:70 }}>
           <div style={{ padding:"14px 16px 12px",background:C.dark,color:"#fff" }}><div style={{ maxWidth:900,margin:"0 auto",fontSize:17,fontWeight:700 }}>Buscar Prestadores</div></div>
           <div style={{ maxWidth:900,margin:"0 auto" }}>
-            <div style={{ padding:"12px 20px 6px" }}><input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Nome, profissão..." style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:C.card,color:C.text,boxSizing:"border-box" }} /></div>
+            <div style={{ padding:"12px 20px 6px" }}><input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Nome, profissão..." style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} /></div>
             <div style={{ padding:"8px 20px",display:"flex",gap:6,overflowX:"auto",scrollbarWidth:"none" }}>{CATS.map(cat => (<button key={cat} onClick={() => setActiveCategory(cat)} style={{ padding:"6px 14px",borderRadius:18,border:activeCategory===cat?"none":`1px solid ${C.border}`,background:activeCategory===cat?C.primary:C.card,color:activeCategory===cat?C.primaryText:C.textSec,fontSize:12,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0 }}>{cat}</button>))}</div>
             <div style={{ padding:"8px 20px 20px" }}>
-              <div style={{ fontSize:12,color:C.textTer,marginBottom:8 }}>{filteredProviders.length} resultado{filteredProviders.length!==1&&"s"}</div>
+              <div style={{ fontSize:12,color:"#1A1A1A",marginBottom:8 }}>{filteredProviders.length} resultado{filteredProviders.length!==1&&"s"}</div>
               <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:10 }}>
                 {filteredProviders.map(p => (
                   <button key={p.id} onClick={() => setSelectedProvider(p)} style={{ display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,cursor:"pointer",width:"100%",textAlign:"left" }}>
@@ -462,11 +462,11 @@ export default function DashboardPage() {
           <div style={{ padding:"14px 16px 12px",background:C.dark,color:"#fff" }}><div style={{ maxWidth:900,margin:"0 auto",fontSize:17,fontWeight:700 }}>Mensagens</div></div>
           <div style={{ maxWidth:900,margin:"0 auto",padding:"8px 20px" }}>
             {conversations.length===0 ? (
-              <div style={{ textAlign:"center",padding:40 }}><div style={{ width:64,height:64,borderRadius:18,background:C.primaryLight,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:28 }}>💬</div><div style={{ fontSize:16,fontWeight:700,color:C.text,marginBottom:6 }}>Nenhuma conversa</div><div style={{ fontSize:13,color:C.textSec,marginBottom:20 }}>Busque um prestador e solicite um orçamento.</div><button onClick={() => setTab("search")} style={{ padding:"10px 24px",borderRadius:10,background:C.primary,color:C.primaryText,border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>Buscar</button></div>
+              <div style={{ textAlign:"center",padding:40 }}><div style={{ width:64,height:64,borderRadius:18,background:C.primaryLight,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:28 }}>💬</div><div style={{ fontSize:16,fontWeight:700,color:"#1A1A1A",marginBottom:6 }}>Nenhuma conversa</div><div style={{ fontSize:13,color:"#333",marginBottom:20 }}>Busque um prestador e solicite um orçamento.</div><button onClick={() => setTab("search")} style={{ padding:"10px 24px",borderRadius:10,background:C.primary,color:C.primaryText,border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>Buscar</button></div>
             ) : conversations.map(c => (
               <button key={c.id} onClick={() => openConversation(c)} style={{ display:"flex",alignItems:"center",gap:12,padding:"14px 0",cursor:"pointer",width:"100%",textAlign:"left",background:"none",border:"none",borderBottom:`1px solid ${C.divider}` }}>
                 <div style={{ width:46,height:46,borderRadius:23,background:C.primary,display:"flex",alignItems:"center",justifyContent:"center",color:C.primaryText,fontWeight:700,fontSize:15,flexShrink:0 }}>{c.provider_initials||"?"}</div>
-                <div style={{ flex:1,minWidth:0 }}><div style={{ display:"flex",justifyContent:"space-between" }}><span style={{ fontSize:14,fontWeight:700,color:C.text }}>{c.provider_name}</span><span style={{ fontSize:11,color:C.textTer }}>{timeAgo(c.last_message_at)}</span></div><div style={{ fontSize:12,color:C.textSec,marginTop:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{c.last_message}</div></div>
+                <div style={{ flex:1,minWidth:0 }}><div style={{ display:"flex",justifyContent:"space-between" }}><span style={{ fontSize:14,fontWeight:700,color:"#1A1A1A" }}>{c.provider_name}</span><span style={{ fontSize:11,color:"#555" }}>{timeAgo(c.last_message_at)}</span></div><div style={{ fontSize:12,color:"#333",marginTop:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{c.last_message}</div></div>
               </button>
             ))}
           </div>
@@ -496,7 +496,7 @@ export default function DashboardPage() {
                       {displayContent}
                       {prop && prop.status === "sent" && negotiatingId !== prop.id && (
                         <div style={{ marginTop:10,display:"flex",gap:6 }}>
-                          <button onClick={() => handleAcceptProposal(prop)} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.green,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>✓ Aceitar</button>
+                          <button onClick={() => handleAcceptProposal(prop)} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.dark,color:C.primary,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>✓ Aceitar</button>
                           <button onClick={() => { setNegotiatingId(prop.id); setCounterOffer(""); }} style={{ flex:1,padding:"8px 0",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>💰 Negociar</button>
                           <button onClick={() => handleRejectProposal(prop)} style={{ flex:1,padding:"8px 0",borderRadius:8,background:"transparent",color:C.red,border:`1.5px solid ${C.red}`,fontSize:12,fontWeight:700,cursor:"pointer" }}>✗ Recusar</button>
                         </div>
@@ -532,7 +532,7 @@ export default function DashboardPage() {
           <div style={{ padding:"10px 16px 14px",background:C.card,borderTop:`1px solid ${C.border}`,flexShrink:0 }}>
             <div style={{ maxWidth:700,margin:"0 auto",display:"flex",gap:8 }}>
               <input value={msgInput} onChange={e => setMsgInput(e.target.value)} onKeyDown={e => e.key==="Enter"&&sendMessage()} placeholder="Mensagem..."
-                style={{ flex:1,padding:"10px 14px",borderRadius:20,border:`1px solid ${C.border}`,fontSize:14,outline:"none",background:C.bg,color:C.text,boxSizing:"border-box" }} />
+                style={{ flex:1,padding:"10px 14px",borderRadius:20,border:`1px solid ${C.border}`,fontSize:14,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
               <button onClick={sendMessage} disabled={!msgInput.trim()} style={{ width:42,height:42,borderRadius:21,background:msgInput.trim()?C.primary:C.border,border:"none",cursor:msgInput.trim()?"pointer":"default",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}><Ic name="send" size={18} color={msgInput.trim()?C.primaryText:C.textTer}/></button>
             </div>
           </div>
@@ -547,8 +547,8 @@ export default function DashboardPage() {
             {proposals.length === 0 ? (
               <div style={{ textAlign:"center",padding:40 }}>
                 <div style={{ width:64,height:64,borderRadius:18,background:C.primaryLight,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:28 }}>📋</div>
-                <div style={{ fontSize:16,fontWeight:700,color:C.text,marginBottom:6 }}>Nenhum serviço ainda</div>
-                <div style={{ fontSize:13,color:C.textSec,lineHeight:1.6 }}>Seus orçamentos aceitos e pagos aparecerão aqui.</div>
+                <div style={{ fontSize:16,fontWeight:700,color:"#1A1A1A",marginBottom:6 }}>Nenhum serviço ainda</div>
+                <div style={{ fontSize:13,color:"#333",lineHeight:1.6 }}>Seus orçamentos aceitos e pagos aparecerão aqui.</div>
               </div>
             ) : (
               <>
@@ -562,7 +562,7 @@ export default function DashboardPage() {
                   const color = status === "accepted" ? C.green : status === "sent" ? C.amber : C.red;
                   return (
                     <div key={status}>
-                      <div style={{ fontSize:13,fontWeight:700,color,marginBottom:8,marginTop:16 }}>{label}</div>
+                      <div style={{ fontSize:13,fontWeight:700,color:"#1A1A1A",marginBottom:8,marginTop:16 }}>{label}</div>
                       {filtered.map(p => {
                         const prov = p.provider_name ? { name: p.provider_name, avatar_initials: p.provider_initials, category: p.provider_category } : providers.find(pr => String(pr.id) === String(p.provider_id)) || { name: "Prestador", avatar_initials: "?", category: "" };
                         let items: any[] = []; try { items = typeof p.items === "string" ? JSON.parse(p.items) : (Array.isArray(p.items) ? p.items : []); } catch { items = []; }
@@ -581,16 +581,16 @@ export default function DashboardPage() {
                                 {p.status === "paid" ? "✓ Pago" : p.status === "accepted" ? "Aceito" : p.status === "sent" ? "Pendente" : "Recusado"}
                               </span>
                             </div>
-                            <div style={{ background:C.bg,borderRadius:10,padding:12,marginBottom:10 }}>
+                            <div style={{ background:"#2A2A2A",borderRadius:10,padding:12,marginBottom:10 }}>
                               {items.map((it:any,idx:number) => (
                                 <div key={idx} style={{ display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:13,borderBottom:idx<items.length-1?`1px solid ${C.divider}`:"none" }}>
-                                  <span style={{ color:C.textSec }}>{it.description}</span>
-                                  <span style={{ fontWeight:700,color:C.text }}>R$ {it.value?.toLocaleString("pt-BR")}</span>
+                                  <span style={{ color:"#FFFFFF" }}>{it.description}</span>
+                                  <span style={{ fontWeight:700,color:"#FFFFFF" }}>R$ {it.value?.toLocaleString("pt-BR")}</span>
                                 </div>
                               ))}
-                              <div style={{ display:"flex",justifyContent:"space-between",padding:"8px 0 0",fontSize:14,fontWeight:800,borderTop:`1px solid ${C.divider}`,marginTop:4 }}>
+                              <div style={{ display:"flex",justifyContent:"space-between",padding:"8px 0 0",fontSize:14,fontWeight:800,borderTop:"1px solid #333",marginTop:4,color:"#FFFFFF" }}>
                                 <span>Total</span>
-                                <span style={{ color:C.primary }}>R$ {p.total_amount?.toLocaleString("pt-BR")}</span>
+                                <span style={{ color:"#FFFFFF",fontWeight:800 }}>R$ {p.total_amount?.toLocaleString("pt-BR")}</span>
                               </div>
                             </div>
                             <div style={{ display:"flex",justifyContent:"space-between",fontSize:12,color:C.textSec }}>
@@ -625,31 +625,31 @@ export default function DashboardPage() {
           <div style={{ maxWidth:600,margin:"0 auto",padding:20 }}>
             <div style={{ display:"flex",alignItems:"center",gap:14,marginBottom:24 }}>
               <div style={{ width:64,height:64,borderRadius:18,background:C.primary,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0 }}>{typeIcon}</div>
-              <div><div style={{ fontSize:18,fontWeight:700,color:C.text }}>{profile?.full_name}</div><div style={{ fontSize:13,color:C.textSec }}>{typeLabel}</div><div style={{ display:"flex",alignItems:"center",gap:4,marginTop:4 }}><Ic name="shield" size={13} color={C.green}/><span style={{ fontSize:11,color:C.green,fontWeight:600 }}>Verificado</span></div></div>
+              <div><div style={{ fontSize:18,fontWeight:700,color:"#1A1A1A" }}>{profile?.full_name}</div><div style={{ fontSize:13,color:"#333" }}>{typeLabel}</div><div style={{ display:"flex",alignItems:"center",gap:4,marginTop:4 }}><Ic name="shield" size={13} color="#2E7D32"/><span style={{ fontSize:11,color:"#2E7D32",fontWeight:600 }}>Verificado</span></div></div>
             </div>
             {!editMode ? (
               <>
                 {[{label:"Editar perfil",icon:"edit",action:()=>setEditMode(true),hl:true},{label:"Indique e Ganhe",icon:"gift"},{label:"Assinatura",icon:"shield"},{label:"Termos de uso",icon:"flag"},{label:"Ajuda e suporte",icon:"flag"}].map((item,i) => (
                   <button key={i} onClick={item.action||(()=>{})} style={{ display:"flex",alignItems:"center",gap:12,width:"100%",padding:"14px 0",background:"none",border:"none",borderBottom:`1px solid ${C.divider}`,cursor:"pointer",textAlign:"left" }}>
-                    <div style={{ width:38,height:38,borderRadius:10,background:item.hl?C.primaryLight:C.bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}><Ic name={item.icon} size={16} color={item.hl?C.primary:C.textSec}/></div>
-                    <div style={{ flex:1,fontSize:14,fontWeight:600,color:item.hl?C.primary:C.text }}>{item.label}</div>
-                    <Ic name="chevRight" size={16} color={C.textTer}/>
+                    <div style={{ width:38,height:38,borderRadius:10,background:item.hl?"#332B00":"#1A1A1A",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}><Ic name={item.icon} size={16} color={item.hl?"#F2B705":"#888"}/></div>
+                    <div style={{ flex:1,fontSize:14,fontWeight:600,color:"#1A1A1A" }}>{item.label}</div>
+                    <Ic name="chevRight" size={16} color="#555"/>
                   </button>
                 ))}
-                <button onClick={handleLogout} style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",padding:14,marginTop:24,background:"none",border:"none",cursor:"pointer" }}><Ic name="logout" size={18} color={C.red}/><span style={{ fontSize:14,fontWeight:700,color:C.red }}>Sair da conta</span></button>
+                <button onClick={handleLogout} style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:8,width:"100%",padding:14,marginTop:24,background:"none",border:"none",cursor:"pointer" }}><Ic name="logout" size={18} color="#C62828"/><span style={{ fontSize:14,fontWeight:700,color:"#C62828" }}>Sair da conta</span></button>
               </>
             ) : (
               <>
-                <button onClick={() => setEditMode(false)} style={{ background:"none",border:"none",color:C.textSec,cursor:"pointer",fontSize:14,marginBottom:20 }}>← Voltar</button>
-                <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Nome completo</label>
-                <div style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:6,background:"#F0F0F0",color:C.textTer,boxSizing:"border-box" }}>{profile?.full_name}</div>
-                <div style={{ fontSize:11,color:C.textTer,marginBottom:16 }}>O nome não pode ser alterado.</div>
-                <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Email</label>
+                <button onClick={() => setEditMode(false)} style={{ background:"none",border:"none",color:"#1A1A1A",cursor:"pointer",fontSize:14,marginBottom:20 }}>← Voltar</button>
+                <label style={{ display:"block",fontSize:13,fontWeight:600,color:"#1A1A1A",marginBottom:6 }}>Nome completo</label>
+                <div style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:6,background:"#2A2A2A",color:"#CCCCCC",boxSizing:"border-box" }}>{profile?.full_name}</div>
+                <div style={{ fontSize:11,color:"#555",marginBottom:16 }}>O nome não pode ser alterado.</div>
+                <label style={{ display:"block",fontSize:13,fontWeight:600,color:"#1A1A1A",marginBottom:6 }}>Email</label>
                 <input value={editForm.email} onChange={e => setEditForm({...editForm,email:e.target.value})} style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,outline:"none",boxSizing:"border-box" }} />
-                <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Telefone</label>
+                <label style={{ display:"block",fontSize:13,fontWeight:600,color:"#1A1A1A",marginBottom:6 }}>Telefone</label>
                 <input value={editForm.phone} onChange={e => setEditForm({...editForm,phone:e.target.value})} placeholder="(11) 99999-9999" style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,outline:"none",boxSizing:"border-box" }} />
-                <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Tipo de conta</label>
-                <div style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,background:"#F0F0F0",color:C.textTer,boxSizing:"border-box" }}>{typeLabel}</div>
+                <label style={{ display:"block",fontSize:13,fontWeight:600,color:"#1A1A1A",marginBottom:6 }}>Tipo de conta</label>
+                <div style={{ width:"100%",padding:"12px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:14,marginBottom:16,background:"#2A2A2A",color:C.textTer,boxSizing:"border-box" }}>{typeLabel}</div>
                 <button onClick={handleSaveProfile} disabled={saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:saving?C.textTer:C.primary,color:C.primaryText,border:"none",fontSize:15,fontWeight:700,cursor:saving?"default":"pointer" }}>{saving?"Salvando...":"Salvar alterações"}</button>
               </>
             )}
@@ -659,7 +659,7 @@ export default function DashboardPage() {
 
       {/* ═══ TAB BAR ═══ */}
       {!selectedProvider && !activeConvo && !showChecklist && (
-        <div style={{ position:"fixed",bottom:0,left:0,right:0,display:"flex",borderTop:`1px solid ${C.border}`,background:C.card,padding:"6px 0 10px",zIndex:50 }}>
+        <div style={{ position:"fixed",bottom:0,left:0,right:0,display:"flex",borderTop:"1px solid #333",background:"#1A1A1A",padding:"6px 0 10px",zIndex:50 }}>
           <div style={{ display:"flex",width:"100%",maxWidth:900,margin:"0 auto" }}>
             {[{key:"home",icon:"home",label:"Início"},{key:"search",icon:"search",label:"Buscar"},{key:"chat",icon:"chat",label:"Chat"},{key:"services",icon:"clipboard",label:"Serviços"},{key:"profile",icon:"user",label:"Perfil"}].map(t => (
               <button key={t.key} onClick={() => { setTab(t.key); setSelectedProvider(null); setActiveConvo(null); setActiveCategory("Todos"); setSearchQuery(""); }}
