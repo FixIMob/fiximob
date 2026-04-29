@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { asaasRequest } from "@/lib/asaas";
 
 const C = {
   primary:"#F2B705",primaryLight:"#332B00",primaryText:"#1A1A1A",
@@ -70,6 +71,13 @@ export default function DashboardPage() {
   const [counterOffer, setCounterOffer] = useState("");
   const [payLoading, setPayLoading] = useState(false);
   const [payDone, setPayDone] = useState(false);
+  const [pixData, setPixData] = useState<any>(null);
+  const [boletoUrl, setBoletoUrl] = useState<string>("");
+  const [asaasPaymentId, setAsaasPaymentId] = useState<string>("");
+  const [showCardForm, setShowCardForm] = useState(false);
+  const [cardForm, setCardForm] = useState({ holderName:"", number:"", expiryMonth:"", expiryYear:"", ccv:"", cpf:"", postalCode:"", addressNumber:"", installments:1 });
+  const [checkingPay, setCheckingPay] = useState(false);
+  const [cpfInput, setCpfInput] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -230,20 +238,73 @@ export default function DashboardPage() {
   const handlePayment = async () => {
     if (!activeProposal) return;
     setPayLoading(true);
-    const fee = activeProposal.total_amount * 0.10;
-    await supabase.from("payments").insert({
-      proposal_id:activeProposal.id, payer_id:userId, amount:activeProposal.total_amount,
-      platform_fee:fee, payment_method:payMethod, status:"paid", paid_at:new Date().toISOString(),
-    });
-    await supabase.from("proposals").update({ status:"paid" }).eq("id", activeProposal.id);
-    setProposals(prev => prev.map(p => p.id === activeProposal.id ? {...p, status:"paid"} : p));
-    await supabase.from("proposals").update({ status:"paid" }).eq("id", activeProposal.id);
-    setProposals(prev => prev.map(p => p.id === activeProposal.id ? {...p, status:"paid"} : p));
-    if (activeConvo) {
-      await supabase.from("messages").insert({ conversation_id:activeConvo.id, sender_id:userId, sender_name:profile?.full_name||"Você",
-        content:`✅ PAGAMENTO CONFIRMADO\nValor: R$ ${activeProposal.total_amount.toLocaleString("pt-BR")}\nMétodo: ${payMethod.toUpperCase()}\nValor em escrow até conclusão.` });
+    setPixData(null);
+    setBoletoUrl("");
+
+    let customerId = profile?.asaas_customer_id;
+    if (!customerId) {
+      if (!cpfInput) { setPayLoading(false); return; }
+      const cust = await asaasRequest("create_customer", {
+        name: profile?.full_name, email: profile?.email, phone: profile?.phone, cpfCnpj: cpfInput.replace(/\D/g,""),
+      });
+      if (cust?.id) {
+        customerId = cust.id;
+        await supabase.from("profiles").update({ asaas_customer_id: cust.id }).eq("id", userId);
+        setProfile({ ...profile, asaas_customer_id: cust.id });
+      } else {
+        setPayLoading(false);
+        alert("Erro ao criar cliente: " + JSON.stringify(cust));
+        return;
+      }
     }
-    setPayLoading(false); setPayDone(true);
+
+    const fee = activeProposal.total_amount * 0.10;
+    const desc = `FixIMOB - Serviço #${activeProposal.id.slice(0,8)}`;
+
+    if (payMethod === "pix" || payMethod === "debit") {
+      const result = await asaasRequest("create_pix", {
+        customerId, value: activeProposal.total_amount, description: desc,
+        externalReference: activeProposal.id,
+      });
+      if (result?.id) {
+        setAsaasPaymentId(result.id);
+        
+        setPixData(result.pix);
+        await supabase.from("payments").insert({
+          proposal_id:activeProposal.id, payer_id:userId, amount:activeProposal.total_amount,
+          platform_fee:fee, payment_method:payMethod, status:"pending",
+        });
+      } else {
+        alert("Erro ao gerar PIX: " + JSON.stringify(result));
+      }
+      setPayLoading(false);
+      return;
+    }
+
+    if (payMethod === "boleto") {
+      const result = await asaasRequest("create_boleto", {
+        customerId, value: activeProposal.total_amount, description: desc,
+        externalReference: activeProposal.id,
+      });
+      if (result?.id) {
+        setAsaasPaymentId(result.id);
+        setBoletoUrl(result.bankSlipUrl || "");
+        await supabase.from("payments").insert({
+          proposal_id:activeProposal.id, payer_id:userId, amount:activeProposal.total_amount,
+          platform_fee:fee, payment_method:"boleto", status:"pending",
+        });
+      } else {
+        alert("Erro ao gerar boleto: " + JSON.stringify(result));
+      }
+      setPayLoading(false);
+      return;
+    }
+
+    if (payMethod === "credit") {
+      setShowCardForm(true);
+      setPayLoading(false);
+      return;
+    }
   };
 
   if (loading) return (
@@ -260,6 +321,63 @@ export default function DashboardPage() {
   const typeLabel = profile?.user_type==="user"?"Usuário":profile?.user_type==="provider"?"Prestador":"Imobiliária";
   const typeIcon = profile?.user_type==="user"?"👤":profile?.user_type==="provider"?"🔧":"🏢";
   const timeAgo = (d:string) => { const diff=Date.now()-new Date(d).getTime(); const m=Math.floor(diff/60000); if(m<1)return"Agora"; if(m<60)return`${m}min`; const h=Math.floor(m/60); if(h<24)return`${h}h`; return`${Math.floor(h/24)}d`; };
+  const handleCardPayment = async () => {
+    if (!activeProposal) return;
+    setPayLoading(true);
+    const customerId = profile?.asaas_customer_id;
+    const fee = activeProposal.total_amount * 0.10;
+    const desc = `FixIMOB - Serviço #${activeProposal.id.slice(0,8)}`;
+    const result = await asaasRequest("create_credit", {
+      customerId, value: activeProposal.total_amount, description: desc,
+      installments: cardForm.installments,
+      externalReference: activeProposal.id,
+      creditCard: {
+        holderName: cardForm.holderName, number: cardForm.number.replace(/\s/g,""),
+        expiryMonth: cardForm.expiryMonth, expiryYear: cardForm.expiryYear, ccv: cardForm.ccv,
+      },
+      creditCardHolderInfo: {
+        name: cardForm.holderName, email: profile?.email,
+        cpfCnpj: cardForm.cpf.replace(/\D/g,""), postalCode: cardForm.postalCode.replace(/\D/g,""),
+        addressNumber: cardForm.addressNumber, phone: profile?.phone || "13999990000",
+      },
+    });
+    if (result?.id && (result?.status === "CONFIRMED" || result?.status === "RECEIVED")) {
+      await supabase.from("payments").insert({
+        proposal_id:activeProposal.id, payer_id:userId, amount:activeProposal.total_amount,
+        platform_fee:fee, payment_method:"credit", status:"paid", paid_at:new Date().toISOString(),
+      });
+      await supabase.from("proposals").update({ status:"paid" }).eq("id", activeProposal.id);
+      setProposals(prev => prev.map(p => p.id === activeProposal.id ? {...p, status:"paid"} : p));
+      if (activeConvo) {
+        await supabase.from("messages").insert({ conversation_id:activeConvo.id, sender_id:userId, sender_name:profile?.full_name||"Você",
+          content:`✅ PAGAMENTO CONFIRMADO\nValor: R$ ${activeProposal.total_amount.toLocaleString("pt-BR")}\nMétodo: CARTÃO DE CRÉDITO (${cardForm.installments}x)\nValor em escrow até conclusão.` });
+      }
+      setPayLoading(false); setPayDone(true); setShowCardForm(false);
+    } else {
+      setPayLoading(false);
+      alert("Erro no cartão: " + (result?.errors?.[0]?.description || JSON.stringify(result)));
+    }
+  };
+
+  const checkPaymentStatus = async () => {
+    if (!asaasPaymentId) return;
+    setCheckingPay(true);
+    const result = await asaasRequest("get_payment", { paymentId: asaasPaymentId });
+    if (result?.status === "RECEIVED" || result?.status === "CONFIRMED") {
+      const fee = activeProposal.total_amount * 0.10;
+      await supabase.from("payments").update({ status:"paid", paid_at:new Date().toISOString() }).eq("proposal_id", activeProposal.id);
+      await supabase.from("proposals").update({ status:"paid" }).eq("id", activeProposal.id);
+      setProposals(prev => prev.map(p => p.id === activeProposal.id ? {...p, status:"paid"} : p));
+      if (activeConvo) {
+        await supabase.from("messages").insert({ conversation_id:activeConvo.id, sender_id:userId, sender_name:profile?.full_name||"Você",
+          content:`✅ PAGAMENTO CONFIRMADO\nValor: R$ ${activeProposal.total_amount.toLocaleString("pt-BR")}\nMétodo: ${payMethod.toUpperCase()}\nValor em escrow até conclusão.` });
+      }
+      setPayDone(true);
+    } else {
+      alert("Pagamento ainda não confirmado. Status: " + (result?.status || "pendente"));
+    }
+    setCheckingPay(false);
+  };
   const getProposalForConvo = (convoId:string) => proposals.find(p => String(p.conversation_id) === String(convoId) && p.status !== "rejected");
   // ═══════ CHECKOUT SCREEN ═══════
   if (showCheckout && activeProposal) {
@@ -316,9 +434,82 @@ export default function DashboardPage() {
               <Ic name="shield" size={16} color={C.green}/>
               <span style={{ fontSize:12,color:C.green,lineHeight:1.5 }}>Escrow: Seu dinheiro fica protegido até a conclusão. Repasse ao prestador no dia 28.</span>
             </div>
-            <button onClick={handlePayment} disabled={payLoading} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:payLoading?C.textTer:C.dark,color:C.primary,border:"none",fontSize:15,fontWeight:700,cursor:payLoading?"default":"pointer" }}>
-              {payLoading ? "Processando..." : `Confirmar R$ ${activeProposal.total_amount.toLocaleString("pt-BR",{minimumFractionDigits:2})}`}
-            </button>
+
+            {/* PIX QR CODE */}
+            {pixData && !payDone && (
+              <div style={{ background:C.card,borderRadius:14,padding:20,marginBottom:16,textAlign:"center",border:`1px solid ${C.border}` }}>
+                <div style={{ fontSize:14,fontWeight:700,color:C.primary,marginBottom:10 }}>Escaneie o QR Code PIX</div>
+                {pixData.encodedImage && <img src={`data:image/png;base64,${pixData.encodedImage}`} alt="PIX QR Code" style={{ width:200,height:200,margin:"0 auto 12px",display:"block",borderRadius:8 }} />}
+                {pixData.payload && (
+                  <div>
+                    <div style={{ fontSize:11,color:C.textTer,marginBottom:6 }}>Ou copie o código PIX:</div>
+                    <div style={{ padding:10,background:"#2A2A2A",borderRadius:8,fontSize:11,color:C.text,wordBreak:"break-all",marginBottom:10 }}>{pixData.payload}</div>
+                    <button onClick={() => { navigator.clipboard.writeText(pixData.payload); alert("Código PIX copiado!"); }} style={{ padding:"8px 20px",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>Copiar código</button>
+                  </div>
+                )}
+                <button onClick={checkPaymentStatus} disabled={checkingPay} style={{ width:"100%",marginTop:12,padding:"12px 0",borderRadius:8,background:C.dark,color:C.primary,border:`1px solid ${C.primary}`,fontSize:13,fontWeight:700,cursor:"pointer" }}>
+                  {checkingPay ? "Verificando..." : "Já paguei — verificar"}
+                </button>
+              </div>
+            )}
+
+            {/* BOLETO LINK */}
+            {boletoUrl && !payDone && (
+              <div style={{ background:C.card,borderRadius:14,padding:20,marginBottom:16,textAlign:"center",border:`1px solid ${C.border}` }}>
+                <div style={{ fontSize:14,fontWeight:700,color:C.primary,marginBottom:10 }}>Boleto Gerado!</div>
+                <div style={{ fontSize:12,color:C.textSec,marginBottom:12 }}>O boleto vence em 3 dias úteis.</div>
+                <a href={boletoUrl} target="_blank" rel="noopener noreferrer" style={{ display:"inline-block",padding:"12px 28px",borderRadius:8,background:C.primary,color:C.primaryText,fontSize:14,fontWeight:700,textDecoration:"none",marginBottom:10 }}>Abrir boleto</a>
+                <button onClick={checkPaymentStatus} disabled={checkingPay} style={{ width:"100%",marginTop:8,padding:"12px 0",borderRadius:8,background:C.dark,color:C.primary,border:`1px solid ${C.primary}`,fontSize:13,fontWeight:700,cursor:"pointer" }}>
+                  {checkingPay ? "Verificando..." : "Já paguei — verificar"}
+                </button>
+              </div>
+            )}
+
+            {/* CREDIT CARD FORM */}
+            {showCardForm && !payDone && (
+              <div style={{ background:C.card,borderRadius:14,padding:20,marginBottom:16,border:`1px solid ${C.border}` }}>
+                <div style={{ fontSize:14,fontWeight:700,color:C.primary,marginBottom:12 }}>Dados do cartão</div>
+                <input value={cardForm.holderName} onChange={e => setCardForm({...cardForm,holderName:e.target.value})} placeholder="Nome no cartão" style={{ width:"100%",padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,marginBottom:8,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                <input value={cardForm.number} onChange={e => setCardForm({...cardForm,number:e.target.value})} placeholder="Número do cartão" maxLength={19} style={{ width:"100%",padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,marginBottom:8,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                <div style={{ display:"flex",gap:8,marginBottom:8 }}>
+                  <input value={cardForm.expiryMonth} onChange={e => setCardForm({...cardForm,expiryMonth:e.target.value})} placeholder="Mês (MM)" maxLength={2} style={{ flex:1,padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                  <input value={cardForm.expiryYear} onChange={e => setCardForm({...cardForm,expiryYear:e.target.value})} placeholder="Ano (AAAA)" maxLength={4} style={{ flex:1,padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                  <input value={cardForm.ccv} onChange={e => setCardForm({...cardForm,ccv:e.target.value})} placeholder="CVV" maxLength={4} style={{ width:80,padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                </div>
+                <input value={cardForm.cpf} onChange={e => setCardForm({...cardForm,cpf:e.target.value})} placeholder="CPF do titular" style={{ width:"100%",padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,marginBottom:8,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                <div style={{ display:"flex",gap:8,marginBottom:8 }}>
+                  <input value={cardForm.postalCode} onChange={e => setCardForm({...cardForm,postalCode:e.target.value})} placeholder="CEP" style={{ flex:1,padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                  <input value={cardForm.addressNumber} onChange={e => setCardForm({...cardForm,addressNumber:e.target.value})} placeholder="Nº" style={{ width:80,padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+                </div>
+                <div style={{ marginBottom:12 }}>
+                  <div style={{ fontSize:12,fontWeight:600,color:C.textSec,marginBottom:6 }}>Parcelas</div>
+                  <select value={cardForm.installments} onChange={e => setCardForm({...cardForm,installments:Number(e.target.value)})} style={{ width:"100%",padding:"10px 14px",borderRadius:8,border:`1px solid ${C.border}`,fontSize:13,background:"#2A2A2A",color:"#F0F0F0" }}>
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                      <option key={n} value={n}>{n}x de R$ {(activeProposal.total_amount / n).toLocaleString("pt-BR",{minimumFractionDigits:2})}</option>
+                    ))}
+                  </select>
+                </div>
+                <button onClick={handleCardPayment} disabled={payLoading || !cardForm.number || !cardForm.ccv} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:cardForm.number&&cardForm.ccv&&!payLoading?C.dark:C.textTer,color:C.primary,border:"none",fontSize:15,fontWeight:700,cursor:cardForm.number&&cardForm.ccv&&!payLoading?"pointer":"default" }}>
+                  {payLoading ? "Processando..." : `Pagar R$ ${activeProposal.total_amount.toLocaleString("pt-BR",{minimumFractionDigits:2})}`}
+                </button>
+              </div>
+            )}
+
+            {/* CPF FIELD */}
+            {!pixData && !boletoUrl && !showCardForm && !profile?.asaas_customer_id && (
+              <div style={{ marginBottom:12 }}>
+                <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>CPF (obrigatório para pagamento)</label>
+                <input value={cpfInput} onChange={e => setCpfInput(e.target.value)} placeholder="000.000.000-00" maxLength={14}
+                  style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+              </div>
+            )}
+
+            {/* INITIAL PAY BUTTON (before selecting PIX/Boleto/Card) */}
+            {!pixData && !boletoUrl && !showCardForm && (
+              <button onClick={handlePayment} disabled={payLoading} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:payLoading?C.textTer:C.dark,color:C.primary,border:"none",fontSize:15,fontWeight:700,cursor:payLoading?"default":"pointer" }}>
+                {payLoading ? "Processando..." : `Confirmar R$ ${activeProposal.total_amount.toLocaleString("pt-BR",{minimumFractionDigits:2})}`}
+              </button>
+            )}
           </div>
         </div>
       </div>

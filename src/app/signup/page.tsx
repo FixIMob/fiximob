@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { asaasRequest } from "@/lib/asaas";
 
 const C = {
   bg: "#F2B705", card: "#1A1A1A", surface: "#F2B705",
@@ -64,6 +65,20 @@ export default function SignupPage() {
         setError("Erro ao salvar perfil: " + profileError.message);
         setLoading(false);
         return;
+      }
+
+      // Create Asaas customer
+      try {
+        const asaasResult = await asaasRequest("create_customer", {
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone || undefined,
+        });
+        if (asaasResult?.id) {
+          await supabase.from("profiles").update({ asaas_customer_id: asaasResult.id }).eq("id", data.user.id);
+        }
+      } catch (e) {
+        console.log("Asaas customer creation skipped:", e);
       }
 
       router.push("/verify");
