@@ -37,7 +37,7 @@ export default function Home() {
           </a>
           <div style={{ display:"flex",alignItems:"center",gap:20 }}>
             <button onClick={() => setDark(!dark)} style={{ width:36,height:36,borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,cursor:"pointer",fontSize:16 }}>{dark ? "☀️" : "🌙"}</button>
-            <a href="/signup" style={{ padding:"10px 24px",borderRadius:10,background:C.primary,color:"#1A1A1A",fontSize:14,fontWeight:700,textDecoration:"none" }}>Começar grátis</a>
+            <a href="/login" style={{ padding:"10px 24px",borderRadius:10,background:"transparent",color:C.primary,fontSize:14,fontWeight:700,textDecoration:"none",border:`2px solid ${C.primary}` }}>Entrar</a><a href="/signup" style={{ padding:"10px 24px",borderRadius:10,background:C.primary,color:"#1A1A1A",fontSize:14,fontWeight:700,textDecoration:"none" }}>Começar grátis</a>
           </div>
         </div>
       </nav>

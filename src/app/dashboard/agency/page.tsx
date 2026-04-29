@@ -568,9 +568,10 @@ export default function AgencyPage() {
         </div>
       </div>
       <div style={{ maxWidth:900,margin:"0 auto",padding:"16px 20px" }}>
+        <button onClick={() => router.push("/dashboard/agency/dimob")} style={{ display:"flex",alignItems:"center",gap:10,width:"100%",padding:14,background:C.primaryLight,border:`1px solid ${C.primary}`,borderRadius:12,cursor:"pointer",marginBottom:16,textAlign:"left" }}><span style={{ fontSize:22 }}>👑</span><div style={{ flex:1 }}><div style={{ fontSize:14,fontWeight:700,color:C.primary }}>DIMOB Automática</div><div style={{ fontSize:11,color:C.textSec }}>Gerar declaração anual para a Receita Federal</div></div><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth={1.8}><path d="M9 5l7 7-7 7"/></svg></button>
         <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12 }}>
           <span style={{ fontSize:16,fontWeight:700,color:C.text }}>Imóveis</span>
-          <button onClick={() => setShowAddProp(true)} style={{ padding:"8px 16px",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:13,fontWeight:700,cursor:"pointer" }}>+ Cadastrar imóvel</button>
+          <button onClick={() => setShowAddProp(true)} style={{ padding:"8px 16px",borderRadius:8,background:C.dark,color:C.primary,border:"none",fontSize:13,fontWeight:700,cursor:"pointer" }}>+ Cadastrar imóvel</button>
         </div>
         {properties.length === 0 ? (
           <div style={{ textAlign:"center",padding:40,background:C.card,borderRadius:14,border:`1px solid ${C.border}` }}>
