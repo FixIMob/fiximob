@@ -30,7 +30,7 @@ export default function AgencyPage() {
 
   // Forms
   const [showAddProp, setShowAddProp] = useState(false);
-  const [propForm, setPropForm] = useState({ address:"",unit:"",type:"Apartamento",area:"",rent:"",condo:"",landlordName:"",landlordPhone:"",landlordEmail:"",paymentMode:"via_agency" });
+  const [propForm, setPropForm] = useState({ address:"",unit:"",type:"Apartamento",area:"",rent:"",condo:"",landlordName:"",landlordPhone:"",landlordEmail:"",tenantName:"",tenantEmail:"",paymentMode:"via_agency" });
   const [showAddContract, setShowAddContract] = useState(false);
   const [contractForm, setContractForm] = useState({ tenantName:"",tenantCpf:"",rent:"",condo:"",startDate:"",endDate:"",paymentMode:"via_agency" });
   const [showAddInspection, setShowAddInspection] = useState(false);
@@ -41,6 +41,8 @@ export default function AgencyPage() {
   const [payForm, setPayForm] = useState({ monthRef:"",method:"pix" });
   const [saving, setSaving] = useState(false);
   const [viewContract, setViewContract] = useState<any>(null);
+  const [showEditLinks, setShowEditLinks] = useState(false);
+  const [linkForm, setLinkForm] = useState({ tenantName:"",tenantEmail:"",landlordEmail:"" });
 
   useEffect(() => {
     async function load() {
@@ -81,11 +83,12 @@ export default function AgencyPage() {
       agency_id:userId, address:propForm.address, unit:propForm.unit, property_type:propForm.type,
       area_m2:Number(propForm.area), rent_amount:Number(propForm.rent), condo_amount:Number(propForm.condo||0),
       landlord_name:propForm.landlordName, landlord_phone:propForm.landlordPhone, landlord_email:propForm.landlordEmail,
-      payment_mode:propForm.paymentMode, status:"vacant",
+      tenant_name:propForm.tenantName||null, tenant_email:propForm.tenantEmail||null,
+      payment_mode:propForm.paymentMode, status:propForm.tenantName?"occupied":"vacant",
     }).select().single();
     if (data) setProperties(prev => [data, ...prev]);
     setSaving(false); setShowAddProp(false);
-    setPropForm({ address:"",unit:"",type:"Apartamento",area:"",rent:"",condo:"",landlordName:"",landlordPhone:"",landlordEmail:"",paymentMode:"via_agency" });
+    setPropForm({ address:"",unit:"",type:"Apartamento",area:"",rent:"",condo:"",landlordName:"",landlordPhone:"",landlordEmail:"",tenantName:"",tenantEmail:"",paymentMode:"via_agency" });
   };
 
   const handleAddContract = async () => {
@@ -178,7 +181,42 @@ export default function AgencyPage() {
           </button>
           <div><div style={{ fontSize:17,fontWeight:700 }}>{selectedProp.unit || selectedProp.address.split(",")[0]}</div><div style={{ fontSize:11,opacity:.6 }}>{selectedProp.address}</div></div>
         </div>
-
+{/* MANAGE LINKS */}
+<div style={{ maxWidth:700,margin:"0 auto",padding:"12px 20px 0" }}>
+          <button onClick={() => { setLinkForm({ tenantName:selectedProp.tenant_name||"", tenantEmail:selectedProp.tenant_email||"", landlordEmail:selectedProp.landlord_email||"" }); setShowEditLinks(!showEditLinks); }}
+            style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%",padding:10,background:C.primaryLight,border:`1px solid ${C.primary}`,borderRadius:10,cursor:"pointer",fontSize:12,fontWeight:700,color:C.primary }}>
+            👥 {showEditLinks ? "Fechar" : "Gerenciar inquilino e proprietário"}
+          </button>
+          {showEditLinks && (
+            <div style={{ background:C.card,borderRadius:12,padding:16,marginTop:10,border:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:13,fontWeight:700,color:C.text,marginBottom:12 }}>Vincular pessoas ao imóvel</div>
+              <label style={{ display:"block",fontSize:12,fontWeight:600,color:C.textSec,marginBottom:4 }}>Nome do inquilino</label>
+              <input value={linkForm.tenantName} onChange={e => setLinkForm({...linkForm,tenantName:e.target.value})} placeholder="João Silva"
+                style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:10,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+              <label style={{ display:"block",fontSize:12,fontWeight:600,color:C.textSec,marginBottom:4 }}>Email do inquilino (para vincular ao app)</label>
+              <input value={linkForm.tenantEmail} onChange={e => setLinkForm({...linkForm,tenantEmail:e.target.value})} placeholder="inquilino@email.com"
+                style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:10,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+              <label style={{ display:"block",fontSize:12,fontWeight:600,color:C.textSec,marginBottom:4 }}>Email do proprietário (para vincular ao app)</label>
+              <input value={linkForm.landlordEmail} onChange={e => setLinkForm({...linkForm,landlordEmail:e.target.value})} placeholder="proprietario@email.com"
+                style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:10,outline:"none",background:"#2A2A2A",color:"#F0F0F0",boxSizing:"border-box" }} />
+              <div style={{ padding:10,background:C.primaryLight,borderRadius:8,marginBottom:12,fontSize:11,color:C.primary,lineHeight:1.5 }}>
+                Quando a pessoa com este email fizer login no FixIMOB, ela automaticamente verá o imóvel no painel de locatário ou proprietário.
+              </div>
+              <button onClick={async () => {
+                await supabase.from("properties").update({
+                  tenant_name:linkForm.tenantName||null, tenant_email:linkForm.tenantEmail||null,
+                  landlord_email:linkForm.landlordEmail||null,
+                  status:linkForm.tenantName?"occupied":"vacant",
+                }).eq("id", selectedProp.id);
+                setSelectedProp({...selectedProp, tenant_name:linkForm.tenantName, tenant_email:linkForm.tenantEmail, landlord_email:linkForm.landlordEmail, status:linkForm.tenantName?"occupied":"vacant"});
+                setProperties(prev => prev.map(p => p.id === selectedProp.id ? {...p, tenant_name:linkForm.tenantName, tenant_email:linkForm.tenantEmail, landlord_email:linkForm.landlordEmail, status:linkForm.tenantName?"occupied":"vacant"} : p));
+                setShowEditLinks(false);
+              }} style={{ width:"100%",padding:"12px 0",borderRadius:10,background:C.primary,color:C.primaryText,border:"none",fontSize:14,fontWeight:700,cursor:"pointer" }}>
+                Salvar vínculos
+              </button>
+            </div>
+          )}
+        </div>
         <div style={{ display:"flex",background:C.card,borderBottom:`1px solid ${C.border}`,overflowX:"auto" }}>
           {[{k:"payments",l:"Pagamentos"},{k:"tickets",l:"Chamados"},{k:"contracts",l:"Contratos"},{k:"inspections",l:"Vistorias"}].map(t => (
             <button key={t.k} onClick={() => setPropTab(t.k)} style={{ flex:1,padding:"10px 6px",background:"none",border:"none",borderBottom:propTab===t.k?`3px solid ${C.primary}`:"3px solid transparent",color:propTab===t.k?C.primary:C.textTer,fontSize:11,fontWeight:propTab===t.k?700:500,cursor:"pointer",whiteSpace:"nowrap" }}>{t.l}</button>
@@ -189,8 +227,8 @@ export default function AgencyPage() {
           {/* PAYMENTS TAB */}
           {propTab === "payments" && <>
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16 }}>
-              <div style={{ background:C.primaryLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:"#F2B705" }}>Aluguel</div><div style={{ fontSize:20,fontWeight:800,color:C.primaryText,marginTop:4 }}>R$ {selectedProp.rent_amount?.toLocaleString("pt-BR")}</div></div>
-              <div style={{ background:C.greenLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:C.green }}>Condomínio</div><div style={{ fontSize:20,fontWeight:800,color:C.green,marginTop:4 }}>R$ {(selectedProp.condo_amount||0).toLocaleString("pt-BR")}</div></div>
+              <div style={{ background:C.primaryLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:"#F2B705" }}>Aluguel</div><div style={{ fontSize:20,fontWeight:800,color:C.primary,marginTop:4 }}>R$ {selectedProp.rent_amount?.toLocaleString("pt-BR")}</div></div>
+              <div style={{ background:C.greenLight,borderRadius:12,padding:14 }}><div style={{ fontSize:11,color:C.textSec }}>Condomínio</div><div style={{ fontSize:20,fontWeight:800,color:C.text,marginTop:4 }}>R$ {(selectedProp.condo_amount||0).toLocaleString("pt-BR")}</div></div>
             </div>
             <div style={{ display:"flex",justifyContent:"space-between",marginBottom:10 }}><span style={{ fontSize:14,fontWeight:700,color:C.text }}>Histórico</span>
               {selectedProp.status==="occupied" && <button onClick={() => setShowAddPayment(true)} style={{ padding:"6px 14px",borderRadius:8,background:C.primary,color:C.primaryText,border:"none",fontSize:12,fontWeight:700,cursor:"pointer" }}>+ Registrar</button>}
@@ -494,21 +532,21 @@ export default function AgencyPage() {
         <div style={{ fontSize:17,fontWeight:700 }}>Cadastrar Imóvel</div>
       </div>
       <div style={{ maxWidth:500,margin:"0 auto",padding:20 }}>
-        {[{l:"Endereço *",k:"address",ph:"R. Conselheiro Nébias, 432"},{l:"Unidade",k:"unit",ph:"Apto 71"},{l:"Área (m²)",k:"area",ph:"68",t:"number"},{l:"Aluguel (R$) *",k:"rent",ph:"2800",t:"number"},{l:"Condomínio (R$)",k:"condo",ph:"650",t:"number"},{l:"Nome do proprietário *",k:"landlordName",ph:"Maria Helena"},{l:"Telefone proprietário",k:"landlordPhone",ph:"(13) 99999-0000"},{l:"Email proprietário",k:"landlordEmail",ph:"email@email.com"}].map(f => (
+        {[{l:"Endereço *",k:"address",ph:"R. Conselheiro Nébias, 432"},{l:"Unidade",k:"unit",ph:"Apto 71"},{l:"Área (m²)",k:"area",ph:"68",t:"number"},{l:"Aluguel (R$) *",k:"rent",ph:"2800",t:"number"},{l:"Condomínio (R$)",k:"condo",ph:"650",t:"number"},{l:"Nome do proprietário *",k:"landlordName",ph:"Maria Helena"},{l:"Telefone proprietário",k:"landlordPhone",ph:"(13) 99999-0000"},{l:"Email proprietário",k:"landlordEmail",ph:"proprietario@email.com"},{l:"Nome do inquilino (opcional)",k:"tenantName",ph:"João Silva"},{l:"Email do inquilino (opcional)",k:"tenantEmail",ph:"inquilino@email.com"}].map(f => (
           <div key={f.k}>
             <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>{f.l}</label>
             <input value={(propForm as any)[f.k]} onChange={e => setPropForm({...propForm,[f.k]:e.target.value})} placeholder={f.ph} type={f.t||"text"} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:12,outline:"none",boxSizing:"border-box" }} />
           </div>
         ))}
-        <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Tipo de imóvel</label>
-        <select value={propForm.type} onChange={e => setPropForm({...propForm,type:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:12,background:C.card }}>
+        <label style={{ display:"block",fontSize:13,fontWeight:600,color:"#1A1A1A",marginBottom:6 }}>Tipo de imóvel</label>
+        <select value={propForm.type} onChange={e => setPropForm({...propForm,type:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:12,background:"#2A2A2A",color:"#F0F0F0" }}>
           <option>Apartamento</option><option>Casa</option><option>Sala Comercial</option><option>Kitnet</option><option>Loja</option>
         </select>
-        <label style={{ display:"block",fontSize:13,fontWeight:600,color:C.text,marginBottom:6 }}>Fluxo de pagamento</label>
-        <select value={propForm.paymentMode} onChange={e => setPropForm({...propForm,paymentMode:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:20,background:C.card }}>
+        <label style={{ display:"block",fontSize:13,fontWeight:600,color:"#1A1A1A",marginBottom:6 }}>Fluxo de pagamento</label>
+        <select value={propForm.paymentMode} onChange={e => setPropForm({...propForm,paymentMode:e.target.value})} style={{ width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.border}`,fontSize:13,marginBottom:20,background:"#2A2A2A",color:"#F0F0F0" }}>
           <option value="via_agency">Via imobiliária (repasse ao proprietário)</option><option value="direct">Direto (split automático)</option>
         </select>
-        <button onClick={handleAddProperty} disabled={!propForm.address||!propForm.rent||!propForm.landlordName||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:propForm.address&&propForm.rent&&propForm.landlordName&&!saving?C.primary:C.textTer,color:C.primaryText,border:"none",fontSize:15,fontWeight:700,cursor:"pointer" }}>{saving?"Salvando...":"Cadastrar imóvel"}</button>
+        <button onClick={handleAddProperty} disabled={!propForm.address||!propForm.rent||!propForm.landlordName||saving} style={{ width:"100%",padding:"14px 0",borderRadius:10,background:propForm.address&&propForm.rent&&propForm.landlordName&&!saving?"#2E7D32":C.textTer,color:"#FFFFFF",border:"none",fontSize:15,fontWeight:700,cursor:"pointer" }}>{saving?"Salvando...":"Cadastrar imóvel"}</button>
       </div>
     </div>
   );
